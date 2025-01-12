@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <style>
             .container {
@@ -27,15 +27,15 @@
 <body>
    <div id="WikiSt" class="container">
     <div class="footer">
-        <button id="Start">🚪 Start</button>
+        <button id="Start">🚪 Menu</button>
         <button onclick="search()">🔎</button>
         <input type="text" id="search" placeholder="Im Web suchen">
         <button onclick="Wiki() ">Wikipedia</button>
-        
+        <button onclick="Text()" >✏️Texteditor</button>
         <button onclick="Files()">📁Files (Google Drive)</button>
-        <button onclick="Docs()">✏️Textbearbeitung (Docs)</button>
-        <button onclick="Sheets()">Tabellen</button>
-        <button onclick="Slides()">🧑🏽‍🏫Präsentationen</button>
+        <button onclick="Docs()">✏️Docs</button>
+        <button onclick="Sheets()">Sheets</button>
+        <button onclick="Slides()">🧑🏽‍🏫Presentationen</button>
         <audio id="myAudio" src="start.mp3"></audio>
 
 
@@ -50,8 +50,13 @@
    
 
     <script allow="autoplay">
-        var Name = prompt ("Gib deinen Namen ein")
-        alert ('Willkommen ' + Name + ' dein Desktop ist Fertig')
+
+
+        function text(){
+                    window.open("https://flori-soft-open.github.io/texteditor.html", "Editor", "width=600,height=400");
+        }
+        var Name = prompt ("Type in your name")
+        alert ('Wellkome ' + Name )
         playAudio()
         document.addEventListener('keydown', function(event) {
     if (event.key === '^') {
@@ -64,8 +69,9 @@
         function Wiki() {
             window.open("https://www.wikipedia.org", "Pop-up Fenster", "width=600,height=400");
         }
+  
         function Browser(){
-            window.open('https://www.ecosia.de', 'Firefox Ecosia', "width=600,height=400");
+            window.open('https://www.ecosia.de', 'Ecosia', "width=600,height=400");
         }"width=600,height=400"
         function Files(){
             window.open("https://drive.google.com/drive/home?ths=true", 'Files', "width=600,height=400")
