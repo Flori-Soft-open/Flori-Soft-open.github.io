@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashithing for android <3  </title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("https://cdn.pixabay.com/photo/2017/06/25/19/50/sunset-2441776_960_720.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            color: #fff;
+        }
+
+        header {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            
+        }
+
+        nav {
+            margin-top: 20px;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        section {
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            text-align: center;
+        }
+
+        /* Dark-Mode-Design für Textfelder */
+        select {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Dashithing</h1>
+        <nav>
+            <form id="wikipedia-search" action="https://de.wikipedia.org/wiki/Spezial:Suche">
+                <input type="text" name="search"  placeholder="Wikipedia">
+                <button type="submit">Wikipedia</button>
+            </form>
+            <form id="ecosia-search" action="https://www.ecosia.org/search">
+                <input type="text" name="q" placeholder="Ecosia">
+                <button type="submit">Ecosia</button>
+            </form>
+        </nav>
+    </header>
+
+    <main>
+        <section id="urzeit">
+            <h2>Uhrzeit</h2>
+            <div id="uhr"></div>
+        </section>
+
+        <section id="wetter">
+            <h2>Wetter</h2>
+            <select id="city">
+                <option value="Filderstadt">Filderstadt</option>
+                <option value="Stuttgart">Stuttgart</option>
+                <option value="Esslingen">Esslingen</option>
+                <option value="Nürtingen">Nürtingen</option>
+            </select>
+            <button onclick="getWeather()">Abrufen</button>
+            <div id="weather-info"></div>
+        </section>
+    </main>
+
+
+    <script>
+        function updateUhrzeit() {
+            const uhr = document.getElementById("uhr");
+            const jetzt = new Date();
+            uhr.textContent = jetzt.toLocaleTimeString();
+        }
+
+        setInterval(updateUhrzeit, 1000);
+
+        function getWeather() {
+            const city = document.getElementById("city").value;
+            const weatherInfo = document.getElementById("weather-info");
+            weatherInfo.textContent = `Wetter für ${city}: Wird geladen...`;
+
+            // Hier musst du die Koordinaten für die ausgewählte Stadt hinterlegen
+            const coordinates = {
+                "Filderstadt": {
+                    latitude: 48.68,
+                    longitude: 9.22
+                },
+                "Stuttgart": {
+                    latitude: 48.78,
+                    longitude: 9.18
+                },
+                "Esslingen": {
+                    latitude: 48.73,
+                    longitude: 9.39
+                },
+                "Nürtingen": {
+                    latitude: 48.61,
+                    longitude: 9.34
+                }
+            };
+
+            const {
+                latitude,
+                longitude
+            } = coordinates[city];
+
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,precipitation`) // Open-Meteo API mit Stadtparameter
+                .then(response => response.json())
+                .then(data => {
+                    const temperature = data.current_weather.temperature;
+                    const windspeed = data.current_weather.windspeed;
+                    weatherInfo.textContent = `Wetter für ${city}: ${temperature}°C, Windgeschwindigkeit: ${windspeed} m/s`;
+                })
+                .catch(error => {
+                    weatherInfo.textContent = "Fehler beim Abrufen der Wetterdaten.";
+                });
+        }
+    </script>
+    <div class="footer">
+        <h4>Das ist meine erste Android App :-D</h4>
+        <h4>Hello World !</h4>
+        <h1>Made for:</h1>
+        <img src="https://tse4.mm.bing.net/th?id=OIP.5Xk0xbC9Qci3f0_0JMYuHAHaHa&pid=Api" alt="Android" width="150">
+    </div>
+</body>
+
+</html>
