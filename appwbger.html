@@ -105,7 +105,7 @@
         function getWeather() {
             const city = document.getElementById("city").value;
             const weatherInfo = document.getElementById("weather-info");
-            weatherInfo.textContent = `Wetter für ${city}: Wird geladen...`;
+            weatherInfo.innerHTML = `Wetter für ${city}: Wird geladen...`;
 
             // Hier musst du die Koordinaten für die ausgewählte Stadt hinterlegen
             const coordinates = {
@@ -137,7 +137,31 @@
                 .then(data => {
                     const temperature = data.current_weather.temperature;
                     const windspeed = data.current_weather.windspeed;
-                    weatherInfo.textContent = `Wetter für ${city}: ${temperature}°C, Windgeschwindigkeit: ${windspeed} m/s`;
+                    const weathercode = data.current_weather.weathercode;
+
+                    let weatherDescription = "";
+                    if (weathercode >= 0 && weathercode <= 1) {
+                        weatherDescription = "Klar/Sonnig";
+                    } else if (weathercode >= 2 && weathercode <= 3) {
+                        weatherDescription = "Bewölkt";
+                    } else if (weathercode >= 51 && weathercode <= 67) {
+                        weatherDescription = "Regnerisch";
+                    } else if (weathercode >= 71 && weathercode <= 77) {
+                        weatherDescription = "Schnee";
+                    } else if (weathercode >= 80 && weathercode <= 82) {
+                        weatherDescription = "Schauer";
+                    } else if (weathercode >= 95 && weathercode <= 99) {
+                        weatherDescription = "Gewitter";
+                    } else {
+                        weatherDescription = "Unbekannt";
+                    }
+
+                    weatherInfo.innerHTML = `
+                        Wetter für ${city}:<br>
+                        Temperatur: ${temperature}°C<br>
+                        Windgeschwindigkeit: ${windspeed} m/s<br>
+                        Wetter: ${weatherDescription}
+                    `;
                 })
                 .catch(error => {
                     weatherInfo.textContent = "Fehler beim Abrufen der Wetterdaten.";
