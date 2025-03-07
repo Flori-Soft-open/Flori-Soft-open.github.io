@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashithing for android <3  </title>
+    <title>Dashithing für Android <3</title>
     <style>
         body {
             font-family: sans-serif;
@@ -19,17 +19,20 @@
         header {
             background-color: rgba(0, 0, 0, 0.5);
             padding: 20px;
-            
         }
 
         nav {
             margin-top: 20px;
         }
 
-        nav a {
+        nav a, nav button {
             color: #fff;
             text-decoration: none;
             margin: 0 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
         }
 
         main {
@@ -46,14 +49,40 @@
             text-align: center;
         }
 
-        /* Dark-Mode-Design für Textfelder */
-        select {
+        select, textarea {
             background-color: rgba(0, 0, 0, 0.7);
             color: #fff;
             border: none;
             padding: 10px;
             margin: 5px 0;
             border-radius: 5px;
+            width: 90%;
+        }
+
+        #notiz-feld {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-height: 80%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #notiz-feld textarea {
+            width: 100%;
+            height: 200px;
+        }
+        #notiz-feld button {
+            background-color: #555;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -63,7 +92,7 @@
         <h1>Dashithing</h1>
         <nav>
             <form id="wikipedia-search" action="https://de.wikipedia.org/wiki/Spezial:Suche">
-                <input type="text" name="search"  placeholder="Wikipedia">
+                <input type="text" name="search" placeholder="Wikipedia">
                 <button type="submit">Wikipedia</button>
             </form>
             <form id="ecosia-search" action="https://www.ecosia.org/search">
@@ -91,7 +120,11 @@
             <div id="weather-info"></div>
         </section>
     </main>
-
+    <button onclick="toggleNotiz()">Notiz</button>
+    <div id="notiz-feld">
+        <textarea id="notiz-text" placeholder="Schreibe deine Notiz hier..."></textarea>
+        <button onclick="toggleNotiz()">Schließen</button>
+    </div>
 
     <script>
         function updateUhrzeit() {
@@ -105,68 +138,53 @@
         function getWeather() {
             const city = document.getElementById("city").value;
             const weatherInfo = document.getElementById("weather-info");
-            weatherInfo.innerHTML = `Wetter für ${city}: Wird geladen...`;
+            weatherInfo.textContent = `Wetter für ${city}: Wird geladen...`;
 
-            // Hier musst du die Koordinaten für die ausgewählte Stadt hinterlegen
             const coordinates = {
-                "Filderstadt": {
-                    latitude: 48.68,
-                    longitude: 9.22
-                },
-                "Stuttgart": {
-                    latitude: 48.78,
-                    longitude: 9.18
-                },
-                "Esslingen": {
-                    latitude: 48.73,
-                    longitude: 9.39
-                },
-                "Nürtingen": {
-                    latitude: 48.61,
-                    longitude: 9.34
-                }
+                "Filderstadt": { latitude: 48.68, longitude: 9.22 },
+                "Stuttgart": { latitude: 48.78, longitude: 9.18 },
+                "Esslingen": { latitude: 48.73, longitude: 9.39 },
+                "Nürtingen": { latitude: 48.61, longitude: 9.34 }
             };
 
-            const {
-                latitude,
-                longitude
-            } = coordinates[city];
+            const { latitude, longitude } = coordinates[city];
 
-            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,precipitation`) // Open-Meteo API mit Stadtparameter
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,precipitation`)
                 .then(response => response.json())
                 .then(data => {
                     const temperature = data.current_weather.temperature;
                     const windspeed = data.current_weather.windspeed;
-                    const weathercode = data.current_weather.weathercode;
-
-                    let weatherDescription = "";
-                    if (weathercode >= 0 && weathercode <= 1) {
-                        weatherDescription = "Klar/Sonnig";
-                    } else if (weathercode >= 2 && weathercode <= 3) {
-                        weatherDescription = "Bewölkt";
-                    } else if (weathercode >= 51 && weathercode <= 67) {
-                        weatherDescription = "Regnerisch";
-                    } else if (weathercode >= 71 && weathercode <= 77) {
-                        weatherDescription = "Schnee";
-                    } else if (weathercode >= 80 && weathercode <= 82) {
-                        weatherDescription = "Schauer";
-                    } else if (weathercode >= 95 && weathercode <= 99) {
-                        weatherDescription = "Gewitter";
-                    } else {
-                        weatherDescription = "Unbekannt";
-                    }
-
-                    weatherInfo.innerHTML = `
-                        Wetter für ${city}:<br>
-                        Temperatur: ${temperature}°C<br>
-                        Windgeschwindigkeit: ${windspeed} m/s<br>
-                        Wetter: ${weatherDescription}
-                    `;
+                    weatherInfo.textContent = `Wetter für ${city}: ${temperature}°C, Windgeschwindigkeit: ${windspeed} m/s`;
                 })
                 .catch(error => {
                     weatherInfo.textContent = "Fehler beim Abrufen der Wetterdaten.";
                 });
         }
+        function toggleNotiz() {
+            const notizFeld = document.getElementById("notiz-feld");
+            if (notizFeld.style.display === "none") {
+                notizFeld.style.display = "block";
+                loadNotiz();
+            } else {
+                notizFeld.style.display = "none";
+            }
+        }
+        function saveNotiz() {
+            const notizText = document.getElementById("notiz-text").value;
+            document.cookie = `notiz=${encodeURIComponent(notizText)}; path=/`;
+        }
+        function loadNotiz() {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.split('=').map(c => c.trim());
+                if (name === 'notiz') {
+                    document.getElementById("notiz-text").value = decodeURIComponent(value);
+                    break;
+                }
+            }
+        }
+        document.getElementById("notiz-text").addEventListener("input", saveNotiz);
+        loadNotiz();
     </script>
     <div class="footer">
         <h4>Das ist meine erste Android App :-D</h4>
